@@ -46,7 +46,8 @@
          <version>${project.version}</version>
         <executions>
           <execution>
-            <phase>generate-test-sources</phase>
+            <phase>none</phase>
+            <!--<phase>generate-test-sources</phase>-->
             <goals>
               <goal>schema</goal>
               <goal>protocol</goal>

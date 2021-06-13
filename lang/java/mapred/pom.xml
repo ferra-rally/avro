@@ -98,7 +98,8 @@
         <version>${project.version}</version>
         <executions>
           <execution>
-            <phase>generate-sources</phase>
+            <phase>none</phase>
+            <!--<phase>generate-sources</phase> -->
             <goals>
               <goal>schema</goal>
             </goals>
@@ -110,7 +111,6 @@
               <goal>schema</goal>
               <goal>protocol</goal>
             </goals>
-            <!-- compile only test protocols and schemas and place them in the classpath. -->
             <configuration>
               <sourceDirectory></sourceDirectory>
               <testSourceDirectory>${parent.project.basedir}/../../../../share/test/schemas/</testSourceDirectory>

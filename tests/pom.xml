@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <artifactId>avro-parent</artifactId>
+    <groupId>org.apache.avro</groupId>
+    <version>1.11.0-SNAPSHOT</version>
+  </parent>
+
+  <artifactId>tests</artifactId>
+
+  <properties>
+    <sonar.coverage.jacoco.xmlReportPaths>${basedir}/../${aggregate.report.dir}</sonar.coverage.jacoco.xmlReportPaths>
+  </properties>
+
+  <name>Tests</name>
+
+<!-- DEPENDENCIES 
+avro-toplevel
+avro-parent
+avro
+avro-compiler
+avro-maven-plugin
+avro-ipc
+avro-ipc-jetty
+avro-ipc-netty
+trevni-java
+trevni-core
+avro-mapred
+trevni-avro
+trevni-doc
+avro-tools
+avro-protobuf
+avro-thrift
+avro-archetypes-parent
+avro-service-archetype
+avro-grpc
+avro-integration-test
+avro-test-custom-conversions
+avro-codegen-test
+avro-perf
+-->
+  <dependencies>
+    <dependency>
+      <groupId>org.apache.avro</groupId>
+      <artifactId>avro</artifactId>
+      <version>1.11.0-SNAPSHOT</version>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.jacoco</groupId>
+        <artifactId>jacoco-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>report</id>
+            <goals>
+              <goal>report-aggregate</goal>
+            </goals>
+            <phase>verify</phase>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+
+</project>
