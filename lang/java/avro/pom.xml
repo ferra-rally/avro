@@ -45,7 +45,7 @@
     </osgi.import>
     <osgi.export>org.apache.avro*;version="${project.version}"</osgi.export>
     <!-- ADDED -->
-    <sonar.coverage.jacoco.xmlReportPaths>${project.basedir}/../${aggregate.report.dir}</sonar.coverage.jacoco.xmlReportPaths>
+    <sonar.coverage.jacoco.xmlReportPaths>${project.basedir}/../../../${aggregate.report.dir}</sonar.coverage.jacoco.xmlReportPaths>
   </properties>
 
   <build>
@@ -102,6 +102,11 @@
           </execution>
         </executions>
       </plugin>
+      <plugin>
+        <groupId>org.jacoco</groupId>
+        <artifactId>jacoco-maven-plugin</artifactId>
+        <version>${jacoco-maven-plugin.version}</version>
+       </plugin>
     </plugins>
   </build>
 
