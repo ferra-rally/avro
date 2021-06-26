@@ -5,8 +5,4 @@ import org.junit.Test;
 
 public class GenericDataTest {
 
-  @Test
-  public void test() {
-    Assert.assertTrue(true);
-  }
 }
