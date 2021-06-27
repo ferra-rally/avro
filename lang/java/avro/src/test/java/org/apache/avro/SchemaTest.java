@@ -1,6 +1,6 @@
 package org.apache.avro;
 
-import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.databind.JsonNode;
 import org.apache.avro.example.SampleClass;
 import org.junit.Assert;
 import org.junit.Before;
@@ -8,25 +8,31 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
-import java.nio.ByteBuffer;
 import java.util.*;
 
 @RunWith(value = Parameterized.class)
 public class SchemaTest {
-  private String field_name;
+  private String name;
   private List<String> aliasList;
   private List<String> enumFields;
+  private boolean isError;
+  private Schema parseSchema;
+  private List<Schema.Field> fields;
 
-  public SchemaTest(String field_name, List<String> aliasList, List<String> enumFields) {
-    this.field_name = field_name;
+  public SchemaTest(String name, List<String> aliasList, List<String> enumFields, boolean isError, Schema parseSchema, List<Schema.Field> fields) {
+    this.name = name;
     this.aliasList = aliasList;
     this.enumFields = enumFields;
+    this.isError = isError;
+    this.parseSchema = parseSchema;
+    this.fields = fields;
   }
 
   @Parameterized.Parameters
   public static Collection<Object[]> getTestParameters() {
     return Arrays.asList(new Object[][]{
-      {"test_field", new ArrayList<String>() {{add("alias1"); add("alias2");}}, new ArrayList<String>() {{  add("A"); add("B");}}}
+      {"test_name", new ArrayList<String>() {{add("alias1"); add("alias2");}}, new ArrayList<String>() {{  add("A"); add("B");}}, false, SampleClass.getClassSchema(),
+      new ArrayList<Schema.Field>() {{add(new Schema.Field("a", SchemaBuilder.builder().intType(), "", 2));}}}
     });
   }
 
@@ -37,14 +43,14 @@ public class SchemaTest {
   @Test
   public void schemaEnumTest() {
 
-    Schema schema = Schema.createEnum(field_name, "", "", enumFields);
+    Schema schema = Schema.createEnum(name, "", "", enumFields);
 
     Assert.assertEquals(enumFields, schema.getEnumSymbols());
   }
 
   @Test
   public void aliasTest() {
-    Schema schema =  Schema.createEnum(field_name, "", "", enumFields);
+    Schema schema =  Schema.createEnum(name, "", "", enumFields);
 
     for(String alias : aliasList) {
       schema.addAlias(alias);
@@ -62,13 +68,24 @@ public class SchemaTest {
   public void schemaCreateRecordTest() {
     List<Schema.Field> fields = new ArrayList<>();
 
-    Schema schema = Schema.createRecord("asd", "", "", false);
-
-    Schema.Field field = new Schema.Field("a", SchemaBuilder.builder().intType(), "", 2);
-    fields.add(field);
+    Schema schema = Schema.createRecord(name, "", "", isError);
 
     schema.setFields(fields);
 
-    System.out.println(schema.toString(true));
+    for(Schema.Field field : fields) {
+      Schema.Field out = schema.getField(field.name());
+
+      Assert.assertEquals(field, out);
+    }
+  }
+
+  @Test
+  public void parseJsonTest() {
+    JsonNode jNode = Schema.parseJson(parseSchema.toString());
+    Schema.Names names = new Schema.Names();
+
+    boolean result = parseSchema.equalCachedHash(Schema.parse(jNode, names));
+
+    Assert.assertTrue(result);
   }
 }
