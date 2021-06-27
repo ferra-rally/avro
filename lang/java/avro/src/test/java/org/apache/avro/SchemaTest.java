@@ -1,5 +1,6 @@
 package org.apache.avro;
 
+import com.fasterxml.jackson.core.JsonGenerator;
 import org.apache.avro.example.SampleClass;
 import org.junit.Assert;
 import org.junit.Before;
@@ -55,5 +56,19 @@ public class SchemaTest {
       boolean contains = aliasList.contains(name);
       Assert.assertTrue(contains);
     }
+  }
+
+  @Test
+  public void schemaCreateRecordTest() {
+    List<Schema.Field> fields = new ArrayList<>();
+
+    Schema schema = Schema.createRecord("asd", "", "", false);
+
+    Schema.Field field = new Schema.Field("a", SchemaBuilder.builder().intType(), "", 2);
+    fields.add(field);
+
+    schema.setFields(fields);
+
+    System.out.println(schema.toString(true));
   }
 }
