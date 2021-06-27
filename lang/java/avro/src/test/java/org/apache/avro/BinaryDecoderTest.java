@@ -12,10 +12,8 @@ import org.junit.runners.Parameterized;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
+import java.nio.ByteBuffer;
+import java.util.*;
 
 @RunWith(value = Parameterized.class)
 public class BinaryDecoderTest {
@@ -50,7 +48,7 @@ public class BinaryDecoderTest {
         add(new SampleClass("", null, 100,(float) 0, 1.0, null, false, (long) 1));
       }}, true},
       {new ArrayList<SampleClass>() {{
-        add(new SampleClass("string", null, 1,(float) 1.0, 1.0, null, true, (long) 1));
+        add(new SampleClass("string", null, 1,(float) 1.0, 1.0, ByteBuffer.wrap(new byte[] { (byte)0x80, 0x53}), true, (long) 1));
       }}, false},
       {new ArrayList<SampleClass>() {{
         //Empty list
@@ -60,6 +58,10 @@ public class BinaryDecoderTest {
 
   @Before
   public void config() throws IOException {
+    Properties props = System.getProperties();
+    props.setProperty("org.apache.avro.limits.bytes.maxLength", "3");
+    System.out.println(props.getProperty("org.apache.avro.limits.bytes.maxLength"));
+
     DatumWriter<SampleClass> writer = new SpecificDatumWriter<>(SampleClass.class);
     ByteArrayOutputStream stream = new ByteArrayOutputStream();
 
@@ -78,7 +80,6 @@ public class BinaryDecoderTest {
 
   @Test
   public void binaryDecoderReadTest() throws IOException {
-
     decoder = DecoderFactory.get().binaryDecoder(data, null);
 
     for(SampleClass sampleClass : sampleClassList) {
@@ -102,6 +103,28 @@ public class BinaryDecoderTest {
     boolean out = decoder.readBoolean();
     Assert.assertEquals(aBoolean, out);
   }
+/*
+  @Test
+  public void skipArrayTest() throws IOException {
+    ByteArrayOutputStream stream = new ByteArrayOutputStream();
+    Encoder encoder = EncoderFactory.get().binaryEncoder(stream, null);
+    encoder.writeArrayStart();
+
+    encoder.writeInt(3);
+    encoder.writeInt(2);
+    encoder.writeInt(1);
+    encoder.writeArrayEnd();
+    encoder.flush();
+
+    data = stream.toByteArray();
+
+    BinaryDecoder decoder = DecoderFactory.get().binaryDecoder(data, null);
+    //System.out.println(decoder.readArrayStart());
+    decoder.skipArray();
+
+    System.out.println(decoder.readInt());
+    System.out.println(decoder.readInt());
+  }*/
 
   @Test
   public void isEndTest() throws IOException {
