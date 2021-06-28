@@ -1,13 +1,19 @@
 package org.apache.avro;
 
+import com.fasterxml.jackson.core.JsonEncoding;
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.apache.avro.example.SampleClass;
+import org.apache.avro.util.ByteBufferInputStream;
+import org.apache.avro.util.ByteBufferOutputStream;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
+import java.io.*;
 import java.util.*;
 
 @RunWith(value = Parameterized.class)
@@ -38,6 +44,7 @@ public class SchemaTest {
   public void config() {
 
   }
+
   @Test
   public void schemaEnumTest() {
 

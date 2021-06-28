@@ -1,5 +1,8 @@
 package org.apache.avro;
 
+import com.fasterxml.jackson.core.JsonEncoding;
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.apache.avro.example.SampleClass;
 import org.apache.avro.specific.SpecificRecord;
@@ -9,6 +12,10 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.util.*;
 
@@ -27,7 +34,10 @@ public class SchemaParserTest {
   @Parameterized.Parameters
   public static Collection<Object[]> getTestParameters() {
     return Arrays.asList(new Object[][]{
-      {SampleClass.getClassSchema(), new SampleClass("string", null, 1,(float) 1.0, 2.0, ByteBuffer.wrap(new byte[] { (byte)0x80, 0x53}), true, (long) 1)}
+      {SampleClass.getClassSchema(), new SampleClass("string", null, 1,(float) 1.0, 2.0, ByteBuffer.wrap(new byte[] { (byte)0x80, 0x53}), true, (long) 1)},
+      {SchemaBuilder.record("testing.schemas").fields()
+        .name("enumTest").type().nullable().enumeration("aname")
+        .symbols("a","b","c","d","e").noDefault().endRecord(), new SampleClass("string", null, 1,(float) 1.0, 2.0, ByteBuffer.wrap(new byte[] { (byte)0x80, 0x53}), true, (long) 1)}
     });
   }
 
@@ -72,6 +82,33 @@ public class SchemaParserTest {
     }
 
     //Assert.assertEquals(specificRecord, out);
+  }
+
+
+  @Test
+  public void schemaEnumTestToJson() throws IOException {
+    Schema.Names names = new Schema.Names();
+
+    File file = File.createTempFile("stream", ".tmp");
+
+    JsonFactory factory = new JsonFactory();
+
+    JsonGenerator generator = factory.createGenerator(file, JsonEncoding.UTF8);
+
+    parseSchema.toJson(names, generator);
+    generator.close();
+    InputStream inputStream = new FileInputStream(file);
+
+    byte[] dest = new byte[(int) file.length()];
+    int read = inputStream.read(dest);
+    if(read > 0) {
+      String out = new String(dest);
+
+      //TODO edit this test
+      Assert.assertEquals(parseSchema.toString(), out);
+    } else {
+      Assert.fail();
+    }
   }
 
   @Test

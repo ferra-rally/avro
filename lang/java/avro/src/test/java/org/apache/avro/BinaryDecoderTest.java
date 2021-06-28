@@ -58,10 +58,12 @@ public class BinaryDecoderTest {
 
   @Before
   public void config() throws IOException {
+    //TODO edit java properties
+    /*
     Properties props = System.getProperties();
     props.setProperty("org.apache.avro.limits.bytes.maxLength", "3");
     System.out.println(props.getProperty("org.apache.avro.limits.bytes.maxLength"));
-
+*/
     DatumWriter<SampleClass> writer = new SpecificDatumWriter<>(SampleClass.class);
     ByteArrayOutputStream stream = new ByteArrayOutputStream();
 
