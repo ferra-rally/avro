@@ -24,10 +24,12 @@ public class BinaryDecoderTest {
   private boolean aBoolean;
   private byte[] data;
   private DatumReader<SampleClass> reader;
+  private int maxBytesLenght;
 
-  public BinaryDecoderTest(List<SampleClass> sampleClassList, boolean aBoolean) {
+  public BinaryDecoderTest(List<SampleClass> sampleClassList, boolean aBoolean, int maxBytesLenght) {
     this.sampleClassList = sampleClassList;
     this.aBoolean = aBoolean;
+    this.maxBytesLenght = maxBytesLenght;
   }
 
   /*
@@ -46,24 +48,21 @@ public class BinaryDecoderTest {
       {new ArrayList<SampleClass>() {{
         add(new SampleClass("string", null, 1,(float) 1.0, 1.0, null, true, (long) 1));
         add(new SampleClass("", null, 100,(float) 0, 1.0, null, false, (long) 1));
-      }}, true},
+      }}, true, 4},
       {new ArrayList<SampleClass>() {{
         add(new SampleClass("string", null, 1,(float) 1.0, 1.0, ByteBuffer.wrap(new byte[] { (byte)0x80, 0x53}), true, (long) 1));
-      }}, false},
+      }}, false, 5},
       {new ArrayList<SampleClass>() {{
         //Empty list
-      }}, false}
+      }}, false, 2}
     });
   }
 
   @Before
   public void config() throws IOException {
-    //TODO edit java properties
-    /*
     Properties props = System.getProperties();
-    props.setProperty("org.apache.avro.limits.bytes.maxLength", "3");
-    System.out.println(props.getProperty("org.apache.avro.limits.bytes.maxLength"));
-*/
+    props.setProperty("org.apache.avro.limits.bytes.maxLength", "" + maxBytesLenght);
+
     DatumWriter<SampleClass> writer = new SpecificDatumWriter<>(SampleClass.class);
     ByteArrayOutputStream stream = new ByteArrayOutputStream();
 
