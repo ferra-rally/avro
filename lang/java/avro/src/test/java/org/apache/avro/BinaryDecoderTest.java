@@ -46,12 +46,12 @@ public class BinaryDecoderTest {
   public static Collection<Object[]> getTestParameters() {
     return Arrays.asList(new Object[][]{
       {new ArrayList<SampleClass>() {{
-        add(new SampleClass("string", null, 1,(float) 1.0, 1.0, null, true, (long) 1));
-        add(new SampleClass("", null, 100,(float) 0, 1.0, null, false, (long) 1));
+        add(new SampleClass("string", null, 1, (float) 1.0, 1.0, null, true, (long) 1));
+        add(new SampleClass("", null, 100, (float) 0, 1.0, null, false, (long) 1));
       }}, true, 4},
       {new ArrayList<SampleClass>() {{
-        add(new SampleClass("string", null, 1,(float) 1.0, 1.0, ByteBuffer.wrap(new byte[] { (byte)0x80, 0x53}), true, (long) 1));
-      }}, false, 5},
+        add(new SampleClass("string", null, 1, (float) 1.0, 1.0, ByteBuffer.wrap(new byte[]{(byte) 0x80, 0x53}), true, (long) 1));
+      }}, false, 1},
       {new ArrayList<SampleClass>() {{
         //Empty list
       }}, false, 2}
@@ -68,7 +68,7 @@ public class BinaryDecoderTest {
 
     encoder = EncoderFactory.get().binaryEncoder(stream, null);
 
-    for(SampleClass sampleClass : sampleClassList) {
+    for (SampleClass sampleClass : sampleClassList) {
       writer.write(sampleClass, encoder);
     }
 
@@ -83,9 +83,15 @@ public class BinaryDecoderTest {
   public void binaryDecoderReadTest() throws IOException {
     decoder = DecoderFactory.get().binaryDecoder(data, null);
 
-    for(SampleClass sampleClass : sampleClassList) {
-      SampleClass out = reader.read(null, decoder);
-      Assert.assertEquals(sampleClass, out);
+    for (SampleClass sampleClass : sampleClassList) {
+      try {
+        SampleClass out = reader.read(null, decoder);
+        Assert.assertEquals(sampleClass, out);
+      } catch (AvroRuntimeException e) {
+        int bytesLen = sampleClass.getBytes().capacity();
+        Assert.assertTrue(bytesLen > maxBytesLenght);
+      }
+
     }
   }
 
@@ -147,7 +153,7 @@ public class BinaryDecoderTest {
 
     BinaryDecoder decoder = DecoderFactory.get().binaryDecoder(data, null);
 
-    Map  m = new HashMap ();
+    Map m = new HashMap();
     for (long i = decoder.readMapStart(); i != 0; i = decoder.mapNext()) {
       for (long j = 0; j < i; j++) {
         String key = decoder.readString();
@@ -164,15 +170,22 @@ public class BinaryDecoderTest {
   public void isEndTest() throws IOException {
     BinaryDecoder decoder = DecoderFactory.get().binaryDecoder(data, null);
 
-    if(sampleClassList.isEmpty()) {
+    if (sampleClassList.isEmpty()) {
       Assert.assertTrue(decoder.isEnd());
       return;
     }
 
-    for(int i = 0; i < sampleClassList.size(); i++) {
-      reader.read(null, decoder);
+    for (int i = 0; i < sampleClassList.size(); i++) {
+      try {
+        reader.read(null, decoder);
+      } catch (AvroRuntimeException e) {
+        //TODO OK???
+        int bytesLen = sampleClassList.get(i).getBytes().capacity();
+        Assert.assertTrue(bytesLen > maxBytesLenght);
+        return;
+      }
 
-      if(i < sampleClassList.size() - 1) {
+      if (i < sampleClassList.size() - 1) {
         Assert.assertFalse(decoder.isEnd());
       } else {
         Assert.assertTrue(decoder.isEnd());
