@@ -133,39 +133,6 @@ public class BinaryDecoderTest {
     System.out.println(decoder.readInt());
   }*/
 
-  //TODO parametrize test
-  @Test
-  public void readMapTest() throws IOException {
-    ByteArrayOutputStream stream = new ByteArrayOutputStream();
-    Encoder encoder = EncoderFactory.get().binaryEncoder(stream, null);
-
-    encoder.writeMapStart();
-    encoder.setItemCount(1);
-
-    encoder.startItem();
-    encoder.writeString("test");
-    encoder.writeInt(4);
-
-    encoder.writeMapEnd();
-    encoder.flush();
-
-    data = stream.toByteArray();
-
-    BinaryDecoder decoder = DecoderFactory.get().binaryDecoder(data, null);
-
-    Map m = new HashMap();
-    for (long i = decoder.readMapStart(); i != 0; i = decoder.mapNext()) {
-      for (long j = 0; j < i; j++) {
-        String key = decoder.readString();
-        int value = decoder.readInt();
-
-        Assert.assertEquals("test", key);
-        Assert.assertEquals(4, value);
-      }
-    }
-
-  }
-
   @Test
   public void isEndTest() throws IOException {
     BinaryDecoder decoder = DecoderFactory.get().binaryDecoder(data, null);
