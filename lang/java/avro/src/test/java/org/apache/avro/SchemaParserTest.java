@@ -75,13 +75,11 @@ public class SchemaParserTest {
       } else {
         Assert.fail();
       }
-    } else {
-      out = jsonString;
     }
     //Check if the parse is able to get the schema back
     Schema.Parser parser = new Schema.Parser();
 
-    if(out.isEmpty()) {
+    if(jsonString != null) {
       Assert.assertThrows(SchemaParseException.class, () -> {parser.parse(jsonString);});
     } else {
       boolean result = parseSchema.equalCachedHash(parser.parse(out));
