@@ -43,7 +43,11 @@ public class SchemaParserTest {
         .symbols("a","b","c","d","e").noDefault().endRecord(), null, true},
       {SchemaBuilder.record("testing.schemas").fields()
         .name("enumTest").type().nullable().enumeration("aname")
-        .symbols("a","b","c","d","e").noDefault().endRecord(), "{\"type\":\"as\",\"name\":\"schemas\",\"namespace\":\"testing\",\"fields\":[{\"name\":\"enumTest\",\"type\":[{\"type\":\"enum\",\"name\":\"aname\",\"symbols\":[\"a\",\"b\",\"c\",\"d\",\"e\"]},\"null\"]}]}", false}
+        .symbols("a","b","c","d","e").noDefault().endRecord(), "{\"type\":\"as\",\"name\":\"schemas\",\"namespace\":\"testing\",\"fields\":[{\"name\":\"enumTest\",\"type\":[{\"type\":\"enum\",\"name\":\"aname\",\"symbols\":[\"a\",\"b\",\"c\",\"d\",\"e\"]},\"null\"]}]}", false},
+      {SchemaBuilder.unionOf().doubleType().and().intType().endUnion(), null, true},
+      {SchemaBuilder.enumeration("enumarion").symbols("a", "n"), null, true},
+      {SchemaBuilder.array().items(SchemaBuilder.builder().intType()), null, true},
+      {SchemaBuilder.map().values(SchemaBuilder.builder().booleanType()), null, true}
     });
   }
 
