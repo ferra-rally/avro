@@ -1,5 +1,8 @@
 package org.apache.avro;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.avro.example.SampleClass;
 import org.junit.Assert;
 import org.junit.Before;
@@ -56,4 +59,34 @@ public class SchemaFieldTest {
     //Check if is in the first position
     Assert.assertEquals(0, field.pos());
   }
+
+  /*
+  @Test
+  public void schemaCreateRecordTest() throws JsonProcessingException {
+    Schema schema = Schema.createRecord(name, doc, nameSpace, isError);
+
+    schema.setFields(fields);
+
+    for(Schema.Field field : fields) {
+      Schema.Field out = schema.getField(field.name());
+
+      Assert.assertEquals(field, out);
+    }
+
+    //Check if correctly created in schema
+    String schemaJson = schema.toString();
+    System.out.println(schemaJson);
+    ObjectMapper mapper = new ObjectMapper();
+
+    JsonNode actualObj = mapper.readTree(schemaJson);
+    Assert.assertEquals(name, actualObj.get("name").asText());
+    Assert.assertEquals(nameSpace, actualObj.get("namespace").asText());
+    Assert.assertEquals(doc, actualObj.get("doc").asText());
+
+    JsonNode fieldJson = actualObj.get("fields");
+    for(int i = 0; i < fields.size(); i++) {
+      System.out.println(fields.);
+      Assert.assertEquals(fields.get(i), fieldJson.get(i));
+    }
+  }*/
 }
