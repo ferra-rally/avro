@@ -30,8 +30,11 @@ public class SchemaTest {
   @Parameterized.Parameters
   public static Collection<Object[]> getTestParameters() {
     return Arrays.asList(new Object[][]{
-      {"asd", false, "{version: 1}", null, new ArrayList<Schema.Field>() {{add(new Schema.Field("field", SchemaBuilder.builder().intType(), "asd", 3));}}},
-      {"asd", false, "{version: 1}", null, new ArrayList<Schema.Field>() {{}}}
+      {"testname", false, "{version: 1}", null, new ArrayList<Schema.Field>() {{add(new Schema.Field("field", SchemaBuilder.builder().intType(), "asd", 3));}}},
+      {"", true, "", "", new ArrayList<Schema.Field>() {{}}},
+      {null, false, "{version: 1}", "", new ArrayList<Schema.Field>() {{}}},
+      {"testname", false, null, "test.test", new ArrayList<Schema.Field>() {{add(new Schema.Field("field", SchemaBuilder.builder().intType(), "asd", 3));}}},
+      {"testname", false, null, "namespace", new ArrayList<Schema.Field>() {{add(new Schema.Field("asd", SchemaBuilder.builder().intType(), "asd", 3));}}},
     });
   }
 
@@ -42,7 +45,7 @@ public class SchemaTest {
 
   @Test
   public void schemaCreateRecordTest() throws JsonProcessingException {
-    if(name.equals("")) {
+    if(name != null && name.equals("")) {
       Assert.assertThrows(SchemaParseException.class, () -> {Schema.createRecord(name, doc, nameSpace, isError, fields);});
     } else {
       Schema schema = Schema.createRecord(name, doc, nameSpace, isError);
@@ -53,18 +56,21 @@ public class SchemaTest {
 
       JsonNode actualObj = mapper.readTree(schemaJson);
 
-      Assert.assertEquals(name, actualObj.get("name").asText());
-      if(nameSpace != null) {
+      if(name != null) {
+        Assert.assertEquals(name, actualObj.get("name").asText());
+      }
+      if(nameSpace != null && actualObj.has("namespace")) {
         Assert.assertEquals(nameSpace, actualObj.get("namespace").asText());
       }
-      Assert.assertEquals(doc, actualObj.get("doc").asText());
+      if(doc != null) {
+        Assert.assertEquals(doc, actualObj.get("doc").asText());
+      }
     }
   }
 
   @Test
   public void schemaCreateRecordWithFieldsTest() throws JsonProcessingException {
-
-    if(name.equals("")) {
+    if(name != null && name.equals("")) {
       Assert.assertThrows(SchemaParseException.class, () -> {Schema.createRecord(name, doc, nameSpace, isError, fields);});
     } else {
       Schema schema = Schema.createRecord(name, doc, nameSpace, isError, fields);
@@ -76,11 +82,15 @@ public class SchemaTest {
 
       JsonNode actualObj = mapper.readTree(schemaJson);
 
-      Assert.assertEquals(name, actualObj.get("name").asText());
-      if(nameSpace != null) {
+      if(name != null) {
+        Assert.assertEquals(name, actualObj.get("name").asText());
+      }
+      if(nameSpace != null && actualObj.has("namespace")) {
         Assert.assertEquals(nameSpace, actualObj.get("namespace").asText());
       }
-      Assert.assertEquals(doc, actualObj.get("doc").asText());
+      if(doc != null) {
+        Assert.assertEquals(doc, actualObj.get("doc").asText());
+      }
 
       JsonNode fieldsJson = actualObj.get("fields");
       for (int i = 0; i < fields.size(); i++) {
@@ -89,7 +99,6 @@ public class SchemaTest {
 
         //Check if name and doc are present
         Assert.assertEquals(field.name(), fieldJson.get("name").asText());
-        Assert.assertEquals(field.doc(), fieldJson.get("doc").asText());
       }
     }
   }

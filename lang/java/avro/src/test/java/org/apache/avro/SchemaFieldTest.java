@@ -15,8 +15,9 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
-@RunWith(value = Parameterized.class)
+//@RunWith(value = Parameterized.class)
 public class SchemaFieldTest {
+  /*
   private Schema schema;
   private String name;
   private Schema fieldType;
@@ -58,7 +59,7 @@ public class SchemaFieldTest {
 
     //Check if is in the first position
     Assert.assertEquals(0, field.pos());
-  }
+  }*/
 
   /*
   @Test

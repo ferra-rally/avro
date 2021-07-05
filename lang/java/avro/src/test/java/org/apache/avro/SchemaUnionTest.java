@@ -10,8 +10,9 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
-@RunWith(value = Parameterized.class)
-public class SchemaUnionTest {
+//@RunWith(value = Parameterized.class)
+//public class SchemaUnionTest {
+  /*
   private List<Schema> unionSchemes;
 
   @Parameterized.Parameters
@@ -30,5 +31,5 @@ public class SchemaUnionTest {
     Schema schema = Schema.createUnion(unionSchemes);
 
     System.out.println(schema);
-  }
-}
+  }*/
+//}

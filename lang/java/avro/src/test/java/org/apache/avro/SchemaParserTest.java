@@ -5,6 +5,7 @@ import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.apache.avro.example.SampleClass;
+import org.apache.avro.example.User;
 import org.apache.avro.specific.SpecificRecord;
 import org.junit.Assert;
 import org.junit.Before;
@@ -21,103 +22,72 @@ import java.util.*;
 
 @RunWith(value = Parameterized.class)
 public class SchemaParserTest {
-
+  private File file;
   private Schema parseSchema;
+  private JsonGenerator generator;
   private String jsonString;
-  private SpecificRecord specificRecord;
+  private boolean expected;
 
-  public SchemaParserTest(Schema parseSchema, SpecificRecord specificRecord) {
+  public SchemaParserTest(Schema parseSchema, String jsonString, Boolean expected) {
     this.parseSchema = parseSchema;
-    this.specificRecord = specificRecord;
+    this.jsonString = jsonString;
+    this.expected = expected;
   }
 
   @Parameterized.Parameters
   public static Collection<Object[]> getTestParameters() {
     return Arrays.asList(new Object[][]{
-      {SampleClass.getClassSchema(), new SampleClass("string", null, 1,(float) 1.0, 2.0, ByteBuffer.wrap(new byte[] { (byte)0x80, 0x53}), true, (long) 1)},
+      {SampleClass.getClassSchema(), null, true},
       {SchemaBuilder.record("testing.schemas").fields()
         .name("enumTest").type().nullable().enumeration("aname")
-        .symbols("a","b","c","d","e").noDefault().endRecord(), new SampleClass("string", null, 1,(float) 1.0, 2.0, ByteBuffer.wrap(new byte[] { (byte)0x80, 0x53}), true, (long) 1)}
+        .symbols("a","b","c","d","e").noDefault().endRecord(), null, true},
+      {SchemaBuilder.record("testing.schemas").fields()
+        .name("enumTest").type().nullable().enumeration("aname")
+        .symbols("a","b","c","d","e").noDefault().endRecord(), "{\"type\":\"as\",\"name\":\"schemas\",\"namespace\":\"testing\",\"fields\":[{\"name\":\"enumTest\",\"type\":[{\"type\":\"enum\",\"name\":\"aname\",\"symbols\":[\"a\",\"b\",\"c\",\"d\",\"e\"]},\"null\"]}]}", false}
     });
   }
 
   @Before
-  public void config() {
-    jsonString = specificRecord.toString();
-  }
-
-  @Test
-  public void parseJsonToObectTest() {
-    LinkedHashMap out = (LinkedHashMap) Schema.parseJsonToObject(jsonString);
-
-    System.out.println(out.values());
-    System.out.println(specificRecord);
-
-    System.out.println(out.equals(specificRecord));
-
-    //Check if attribute names remained the same
-    List<Schema.Field> fields = specificRecord.getSchema().getFields();
-    Set keyset = out.keySet();
-
-    for(int i = 0; i < fields.size(); i++) {
-      Schema.Field field = fields.get(i);
-
-      //Check names
-      boolean hasName = keyset.contains(field.name());
-      Assert.assertTrue(hasName);
-
-      //Check values
-      if(specificRecord.get(i) != null) {
-        //Avro converts floats to double
-        if(!field.schema().equalCachedHash(SchemaBuilder.builder().floatType())) {
-          Assert.assertEquals(specificRecord.get(i), out.get(field.name()));
-        }
-        //TODO check with delta
-        /*else {
-          //Check with delta
-          float floa = (float) specificRecord.get(i);
-          System.out.println(floa);
-        }*/
-      }
-    }
-
-    //Assert.assertEquals(specificRecord, out);
-  }
-
-
-  @Test
-  public void schemaEnumTestToJson() throws IOException {
-    Schema.Names names = new Schema.Names();
-
-    File file = File.createTempFile("stream", ".tmp");
+  public void config() throws IOException {
+    file = File.createTempFile("stream", ".tmp");
 
     JsonFactory factory = new JsonFactory();
-
-    JsonGenerator generator = factory.createGenerator(file, JsonEncoding.UTF8);
-
-    parseSchema.toJson(names, generator);
-    generator.close();
-    InputStream inputStream = new FileInputStream(file);
-
-    byte[] dest = new byte[(int) file.length()];
-    int read = inputStream.read(dest);
-    if(read > 0) {
-      String out = new String(dest);
-
-      //TODO edit this test
-      Assert.assertEquals(parseSchema.toString(), out);
-    } else {
-      Assert.fail();
-    }
+    generator = factory.createGenerator(file, JsonEncoding.UTF8);
   }
 
   @Test
-  public void parseJsonTest() {
-    JsonNode jNode = Schema.parseJson(parseSchema.toString());
-    Schema.Names names = new Schema.Names();
+  public void parseJsonTest() throws IOException {
+    String out = "";
+    if(jsonString == null) {
+      Schema.Names names = new Schema.Names();
 
-    boolean result = parseSchema.equalCachedHash(Schema.parse(jNode, names));
+      //Parse the schema to a json string
+      parseSchema.toJson(names, generator);
+      generator.close();
+      InputStream inputStream = new FileInputStream(file);
 
-    Assert.assertTrue(result);
+      byte[] dest = new byte[(int) file.length()];
+      int read = inputStream.read(dest);
+      if (read > 0) {
+        out = new String(dest);
+
+        Assert.assertEquals(parseSchema.toString(), out);
+      } else {
+        Assert.fail();
+      }
+    } else {
+      out = jsonString;
+    }
+    //Check if the parse is able to get the schema back
+    Schema.Parser parser = new Schema.Parser();
+
+    if(out.isEmpty()) {
+      Assert.assertThrows(SchemaParseException.class, () -> {parser.parse(jsonString);});
+    } else {
+      boolean result = parseSchema.equalCachedHash(parser.parse(out));
+
+      Assert.assertEquals(expected, result);
+    }
+
   }
 }
