@@ -21,14 +21,13 @@ public class BinaryDecoderTest {
   private Encoder encoder;
   private Decoder decoder;
   private List<SampleClass> sampleClassList;
-  private boolean aBoolean;
+  //private boolean aBoolean;
   private byte[] data;
   private DatumReader<SampleClass> reader;
   private int maxBytesLenght;
 
-  public BinaryDecoderTest(List<SampleClass> sampleClassList, boolean aBoolean, int maxBytesLenght) {
+  public BinaryDecoderTest(List<SampleClass> sampleClassList, int maxBytesLenght) {
     this.sampleClassList = sampleClassList;
-    this.aBoolean = aBoolean;
     this.maxBytesLenght = maxBytesLenght;
   }
 
@@ -48,13 +47,13 @@ public class BinaryDecoderTest {
       {new ArrayList<SampleClass>() {{
         add(new SampleClass("string", null, 1, (float) 1.0, 1.0, null, true, (long) 1));
         add(new SampleClass("", null, 100, (float) 0, 1.0, null, false, (long) 1));
-      }}, true, 4},
+      }},  4},
       {new ArrayList<SampleClass>() {{
-        add(new SampleClass("string", null, 1, (float) 1.0, 1.0, ByteBuffer.wrap(new byte[]{(byte) 0x80, 0x53}), true, (long) 1));
-      }}, false, 1},
+        add(new SampleClass("string", null, 1, (float) 1.0, 1.0, ByteBuffer.wrap(new byte[]{(byte) 0x80, 0x12}), true, (long) 1));
+      }},  1},
       {new ArrayList<SampleClass>() {{
         //Empty list
-      }}, false, 2}
+      }}, 0}
     });
   }
 
@@ -96,20 +95,6 @@ public class BinaryDecoderTest {
   }
 
   //TODO Move test to separate unit test
-  @Test
-  public void readBooleanTest() throws IOException {
-    ByteArrayOutputStream stream = new ByteArrayOutputStream();
-    Encoder encoder = EncoderFactory.get().binaryEncoder(stream, null);
-    encoder.writeBoolean(aBoolean);
-    encoder.flush();
-
-    data = stream.toByteArray();
-
-    BinaryDecoder decoder = DecoderFactory.get().binaryDecoder(data, null);
-
-    boolean out = decoder.readBoolean();
-    Assert.assertEquals(aBoolean, out);
-  }
 /*
   @Test
   public void skipArrayTest() throws IOException {
