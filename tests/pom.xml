@@ -77,6 +77,44 @@ avro-perf
           </execution>
         </executions>
       </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <parallel>none</parallel>
+        </configuration>
+        <executions>
+          <execution>
+            <id>test-with-custom-coders</id>
+            <phase>test</phase>
+            <goals>
+              <goal>test</goal>
+            </goals>
+            <configuration>
+              <systemPropertyVariables>
+                <org.apache.avro.specific.use_custom_coders>true</org.apache.avro.specific.use_custom_coders>
+              </systemPropertyVariables>
+            </configuration>
+          </execution>
+          <execution>
+            <id>test-with-fast-reader</id>
+            <phase>test</phase>
+            <goals>
+              <goal>test</goal>
+            </goals>
+            <configuration>
+              <systemPropertyVariables>
+                <org.apache.avro.fastread>true</org.apache.avro.fastread>
+              </systemPropertyVariables>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.jacoco</groupId>
+        <artifactId>jacoco-maven-plugin</artifactId>
+        <version>4.13.2</version>
+      </plugin>
     </plugins>
   </build>
 
