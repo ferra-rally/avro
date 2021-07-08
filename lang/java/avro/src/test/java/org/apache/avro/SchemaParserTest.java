@@ -3,7 +3,9 @@ package org.apache.avro;
 import com.fasterxml.jackson.core.JsonEncoding;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.ObjectCodec;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.avro.example.SampleClass;
 import org.apache.avro.example.User;
 import org.apache.avro.specific.SpecificRecord;
@@ -47,7 +49,14 @@ public class SchemaParserTest {
       {SchemaBuilder.unionOf().doubleType().and().intType().endUnion(), null, true},
       {SchemaBuilder.enumeration("enumarion").symbols("a", "n"), null, true},
       {SchemaBuilder.array().items(SchemaBuilder.builder().intType()), null, true},
-      {SchemaBuilder.map().values(SchemaBuilder.builder().booleanType()), null, true}
+      {SchemaBuilder.map().values(SchemaBuilder.builder().booleanType()), null, true},
+      {SchemaBuilder.fixed("fixed").size(2), null, true},
+      {SchemaBuilder.record("testing.schemas").fields()
+      .name("enumTest").type().nullable().enumeration("aname")
+      .symbols("a","b","c","d","e").enumDefault("a").name("array").type().array().items(SchemaBuilder.builder().booleanType()).noDefault()
+        .name("map").type().map().values(SchemaBuilder.builder().booleanType()).noDefault()
+        .name("fixed").type().fixed("fixed").size(2).noDefault()
+        .endRecord(), null, true},
     });
   }
 
@@ -56,7 +65,9 @@ public class SchemaParserTest {
     file = File.createTempFile("stream", ".tmp");
 
     JsonFactory factory = new JsonFactory();
+
     generator = factory.createGenerator(file, JsonEncoding.UTF8);
+    generator.setCodec(new ObjectMapper());
   }
 
   @Test
