@@ -121,7 +121,7 @@ public class BinaryDecoderTest {
       try {
         SampleClass out = reader.read(null, decoder);
         Assert.assertNotEquals(sampleClass, out);
-      } catch (ArrayIndexOutOfBoundsException | AvroRuntimeException e) {
+      } catch (Exception e) {
         Assert.assertTrue(true);
       }
       //Assert.assertThrows(Exception.class, () -> {reader.read(null, decoder);});
