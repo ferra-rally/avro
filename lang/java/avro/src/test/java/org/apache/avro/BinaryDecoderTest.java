@@ -94,30 +94,6 @@ public class BinaryDecoderTest {
     }
   }
 
-  //TODO Move test to separate unit test
-/*
-  @Test
-  public void skipArrayTest() throws IOException {
-    ByteArrayOutputStream stream = new ByteArrayOutputStream();
-    Encoder encoder = EncoderFactory.get().binaryEncoder(stream, null);
-    encoder.writeArrayStart();
-
-    encoder.writeInt(3);
-    encoder.writeInt(2);
-    encoder.writeInt(1);
-    encoder.writeArrayEnd();
-    encoder.flush();
-
-    data = stream.toByteArray();
-
-    BinaryDecoder decoder = DecoderFactory.get().binaryDecoder(data, null);
-    //System.out.println(decoder.readArrayStart());
-    decoder.skipArray();
-
-    System.out.println(decoder.readInt());
-    System.out.println(decoder.readInt());
-  }*/
-
   @Test
   public void isEndTest() throws IOException {
     BinaryDecoder decoder = DecoderFactory.get().binaryDecoder(data, null);
