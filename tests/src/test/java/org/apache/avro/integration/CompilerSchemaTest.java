@@ -53,7 +53,7 @@ public class CompilerSchemaTest {
     SpecificCompiler compiler = new SpecificCompiler(schema);
 
     compiler.compileToDestination(null, outputRoot);
-    File javaFile = new File("out/" + schema.getNamespace().replace("\\.", File.separator) + File.separator + schema.getName()+ ".java");
+    File javaFile = new File(outputRoot.getAbsolutePath() + "/" + schema.getNamespace().replace("\\.", File.separator) + File.separator + schema.getName()+ ".java");
 
     Assert.assertTrue(javaFile.exists());
   }
