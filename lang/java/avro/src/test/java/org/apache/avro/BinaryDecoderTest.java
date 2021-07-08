@@ -115,18 +115,9 @@ public class BinaryDecoderTest {
   }
 
   @Test
-  public void binaryDecoderRandomizedData() throws IOException {
-    int maxLengh;
-
-    try {
-      maxLengh = Integer.parseInt(maxBytesLenght);
-    } catch (NumberFormatException e) {
-      maxLengh = Integer.MAX_VALUE;
-    }
-
+  public void binaryDecoderRandomizedData() {
     decoder = DecoderFactory.get().binaryDecoder(editedData, null);
     for (SampleClass sampleClass : sampleClassList) {
-
       Assert.assertThrows(Exception.class, () -> {reader.read(null, decoder);});
     }
   }

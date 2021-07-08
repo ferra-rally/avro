@@ -19,6 +19,7 @@ import java.util.Collection;
 @RunWith(value = Parameterized.class)
 public class CompilerSchemaTest {
   private Schema schema;
+  private File outputRoot;
 
   public CompilerSchemaTest(Schema schema) {
     this.schema = schema;
@@ -43,14 +44,12 @@ public class CompilerSchemaTest {
   }
 
   @Before
-  public void configure() {
-
+  public void configure() throws IOException {
+    outputRoot = Files.createTempDirectory("out").toFile();
   }
 
   @Test
   public void test() throws IOException {
-    File outputRoot = Files.createTempDirectory("out").toFile();
-
     SpecificCompiler compiler = new SpecificCompiler(schema);
 
     compiler.compileToDestination(null, outputRoot);
