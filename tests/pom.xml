@@ -17,7 +17,7 @@
 
   <name>Tests</name>
 
-<!-- DEPENDENCIES 
+<!-- DEPENDENCIES
 avro-toplevel
 avro-parent
 avro
@@ -48,15 +48,17 @@ avro-perf
       <artifactId>avro</artifactId>
       <version>1.11.0-SNAPSHOT</version>
     </dependency>
+      <dependency>
+          <groupId>org.apache.avro</groupId>
+          <artifactId>avro-compiler</artifactId>
+          <version>1.11.0-SNAPSHOT</version>
+          <scope>test</scope>
+      </dependency>
     <dependency>
-      <groupId>org.apache.avro</groupId>
-      <artifactId>avro-ipc</artifactId>
-      <version>1.11.0-SNAPSHOT</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.avro</groupId>
-      <artifactId>avro-ipc-jetty</artifactId>
-      <version>1.11.0-SNAPSHOT</version>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>4.13.2</version>
+      <scope>test</scope>
     </dependency>
   </dependencies>
 
